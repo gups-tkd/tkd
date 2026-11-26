@@ -934,7 +934,7 @@ body:not(.admin-logged-in) .admin-only { display: none !important; }
             <div class="quick-card-title">ब्लॉक अधिकारी व कार्मिक</div>
             <div class="quick-card-sub">ग्राम पंचायत/नगर पालिका, नाम, पद, पदस्थापन व मोबाइल नं.</div>
         </a>
-        <button type="button" id="btn-hero-broadcast" class="quick-card">
+        <button type="button" id="btn-hero-broadcast" class="quick-card admin-only">
             <div class="quick-card-icon">📢</div>
             <div class="quick-card-title">WhatsApp / SMS सूचना भेजें</div>
             <div class="quick-card-sub">अभिभावकों को एक साथ सूचना व समय सारणी भेजें</div>
@@ -1007,7 +1007,7 @@ body:not(.admin-logged-in) .admin-only { display: none !important; }
         </div>
         <div class="btn-group">
             <button type="button" id="btn-add-student" class="btn btn-saffron admin-only">➕ नया छात्र जोड़ें</button>
-            <button type="button" id="btn-stu-broadcast" class="btn btn-success">📢 WhatsApp सूचना भेजें</button>
+            <button type="button" id="btn-stu-broadcast" class="btn btn-success admin-only">📢 WhatsApp सूचना भेजें</button>
             <button type="button" id="btn-export-csv" class="btn btn-outline">📥 CSV एक्सपोर्ट</button>
             <button type="button" id="btn-reset-students" class="btn btn-outline admin-only">🔄 सूची रीसेट</button>
             <button type="button" id="btn-print-students" class="btn btn-navy">🖨️ छात्र सूची प्रिंट करें</button>
@@ -1066,7 +1066,7 @@ body:not(.admin-logged-in) .admin-only { display: none !important; }
             <div class="sec-sub">शीतकालीन, ग्रीष्मकालीन एवं परीक्षा समय सारणी</div>
         </div>
         <div class="btn-group">
-            <button type="button" id="btn-tt-broadcast" class="btn btn-success">📢 समय सारणी WhatsApp पर भेजें</button>
+            <button type="button" id="btn-tt-broadcast" class="btn btn-success admin-only">📢 समय सारणी WhatsApp पर भेजें</button>
             <button type="button" id="btn-add-exam" class="btn btn-saffron admin-only" style="display:none;">➕ परीक्षा जोड़ें</button>
             <button type="button" id="btn-print-tt" class="btn btn-navy">🖨️ समय सारणी प्रिंट करें</button>
         </div>
@@ -1245,9 +1245,7 @@ body:not(.admin-logged-in) .admin-only { display: none !important; }
             <h2 class="sec-title">📞 संपर्क एवं अभिभावक संदेश केंद्र</h2>
             <div class="sec-sub">विद्यालय का पता, संस्था प्रधान संपर्क एवं WhatsApp सूचना केंद्र</div>
         </div>
-        <button type="button" id="btn-cnt-broadcast" class="btn btn-success">📢 WhatsApp सूचना भेजें</button>
-    </div>
-        <button type="button" id="btn-cnt-broadcast" class="btn btn-success">📢 WhatsApp / SMS सूचना भेजें</button>
+        <button type="button" id="btn-cnt-broadcast" class="btn btn-success admin-only">📢 WhatsApp सूचना भेजें</button>
     </div>
     <div class="contact-grid">
         <div class="info-grid" style="align-content:start;">
@@ -2512,7 +2510,7 @@ body:not(.admin-logged-in) .admin-only { display: none !important; }
                     '<div class="bday-name">' + esc(item.name) + '</div>' +
                     '<div style="font-size:12px;color:var(--text-muted);font-weight:600;">' + esc(item.sub) + '</div>' +
                     '<p class="bday-msg">' + esc(wishText) + '</p>' +
-                    '<div class="bday-actions">' +
+                    '<div class="bday-actions admin-only">' +
                         '<a href="' + esc(waUrl) + '" target="_blank" rel="noopener" class="btn btn-sm btn-success">💬 WhatsApp शुभकामना भेजें</a>' +
                     '</div>' +
                 '</div>' +
@@ -3149,7 +3147,7 @@ body:not(.admin-logged-in) .admin-only { display: none !important; }
                 '<button type="button" id="btn-edit-rc" class="btn btn-outline admin-only">✏️ परिणाम संपादित करें (Edit Result)</button>' +
                 '<button type="button" id="btn-print-rc" class="btn btn-navy">🖨️ रिपोर्ट कार्ड प्रिंट / PDF सेव करें</button>' +
                 '<button type="button" id="btn-dl-rc" class="btn btn-saffron">⬇️ रिपोर्ट कार्ड डाउनलोड करें</button>' +
-                '<button type="button" id="btn-wa-rc" class="btn btn-success">💬 WhatsApp पर परिणाम भेजें</button>' +
+                '<button type="button" id="btn-wa-rc" class="btn btn-success admin-only">💬 WhatsApp पर परिणाम भेजें</button>' +
             '</div>' + buildReportCardHTML(st, examKey);
 
         $('btn-edit-rc').onclick = function () { openEditResultModal(st.id); };
@@ -3514,6 +3512,10 @@ body:not(.admin-logged-in) .admin-only { display: none !important; }
     }
 
     function openBroadcast(defaultTpl) {
+        if (!document.body.classList.contains('admin-logged-in')) {
+            showToast('⚠️ WhatsApp सूचना केंद्र केवल शिक्षक लॉगिन पर उपलब्ध है।');
+            return;
+        }
         $('bc-tpl').value = defaultTpl || 'custom';
         $('bc-msg').value = buildBroadcastTemplate(defaultTpl || 'custom');
         refreshBroadcastRecipients();
