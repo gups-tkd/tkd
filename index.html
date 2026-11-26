@@ -876,7 +876,7 @@ body:not(.admin-logged-in) .admin-only { display: none !important; }
                     <th>DOB</th>
                     <th>कार्मिक का मूल पद</th>
                     <th>कार्मिक का मूल विषय</th>
-                    <th>Mobile No</th>
+                    <th class="admin-only">Mobile No</th>
                     <th>Current School Joining Date</th>
                     <th>Photograph</th>
                     <th class="no-print admin-only">Edit</th>
@@ -938,7 +938,7 @@ body:not(.admin-logged-in) .admin-only { display: none !important; }
                     <th>Gender</th>
                     <th class="admin-only">DOB</th>
                     <th class="admin-only">Mobile No</th>
-                    <th>Photograph</th>
+                    <th class="admin-only">Photograph</th>
                     <th class="no-print admin-only">Edit</th>
                     <th class="no-print admin-only">Delete</th>
                 </tr>
@@ -2368,7 +2368,9 @@ body:not(.admin-logged-in) .admin-only { display: none !important; }
         var q = ($('staff-search').value || '').trim().toLowerCase();
         var list = state.staff.filter(function (s) {
             if (!q) return true;
-            return [s.name, s.sanctionPost, s.sanctionSubject, s.empId, s.staffProfileId, s.mobile].join(' ').toLowerCase().indexOf(q) !== -1;
+            var isAdm = document.body.classList.contains('admin-logged-in');
+            var fields = isAdm ? [s.name, s.sanctionPost, s.sanctionSubject, s.empId, s.staffProfileId, s.mobile] : [s.name, s.sanctionPost, s.sanctionSubject, s.empId, s.staffProfileId];
+            return fields.join(' ').toLowerCase().indexOf(q) !== -1;
         });
         if (!list.length) {
             $('staff-tbody').innerHTML = '<tr><td colspan="14" style="text-align:center;padding:16px;">कोई कार्मिक प्रविष्टि नहीं मिली।</td></tr>';
@@ -2394,7 +2396,7 @@ body:not(.admin-logged-in) .admin-only { display: none !important; }
                 '<td style="white-space:nowrap;">' + esc(s.dob) + '</td>' +
                 '<td>' + esc(s.origPost) + '</td>' +
                 '<td>' + esc(s.origSubject) + '</td>' +
-                '<td style="white-space:nowrap;">' + esc(s.mobile) + '</td>' +
+                '<td class="admin-only" style="white-space:nowrap;">' + esc(s.mobile) + '</td>' +
                 '<td style="white-space:nowrap;">' + esc(s.joiningDate) + '</td>' +
                 '<td>' + photoHtml + '</td>' +
                 '<td class="no-print admin-only"><button type="button" class="btn btn-sm btn-outline" data-edit-staff="' + s.id + '">✏️ Edit</button></td>' +
@@ -2454,7 +2456,7 @@ body:not(.admin-logged-in) .admin-only { display: none !important; }
                 '<td>' + esc(st.gender) + '</td>' +
                 '<td class="admin-only" style="white-space:nowrap;">' + esc(st.dob) + '</td>' +
                 '<td class="admin-only" style="white-space:nowrap;">' + esc(st.mobile) + '</td>' +
-                '<td>' + photoHtml + '</td>' +
+                '<td class="admin-only">' + photoHtml + '</td>' +
                 '<td class="no-print admin-only"><button type="button" class="btn btn-sm btn-outline" data-edit-stu="' + st.id + '">✏️ Edit</button></td>' +
                 '<td class="no-print admin-only"><button type="button" class="btn btn-sm btn-danger" data-del-stu="' + st.id + '">🗑️</button></td>' +
             '</tr>';
@@ -2758,10 +2760,12 @@ body:not(.admin-logged-in) .admin-only { display: none !important; }
         renderReportCard();
     }
 
-    function buildReportCardHTML(st, examKey) {
+    function buildReportCardHTML(st, examKey, includePrivate) {
         var subs = getSubjectsForClass(st.cls);
         var rollNo = getStuRollNo(st.id);
-        var photoTag = st.photo ? '<img src="' + esc(st.photo) + '" class="rc-photo">' : '<div class="rc-photo" style="display:flex;align-items:center;justify-content:center;font-size:28px;">🎓</div>';
+        var showPrivate = !!includePrivate || document.body.classList.contains('admin-logged-in');
+        var photoTag = (showPrivate && st.photo) ? '<img src="' + esc(st.photo) + '" class="rc-photo">' : '<div class="rc-photo" style="display:flex;align-items:center;justify-content:center;font-size:28px;">🎓</div>';
+        var dobHtml = showPrivate ? ('<div><strong>जन्म तिथि:</strong> ' + esc(st.dob) + '</div>') : '';
 
         if (isPrimaryClass(st.cls)) {
             var saKey = (examKey === 'sa1' || examKey === 'sa2' || examKey === 'sa3' || examKey === 'sa_final') ? examKey : 'sa_final';
@@ -2801,7 +2805,7 @@ body:not(.admin-logged-in) .admin-only { display: none !important; }
                         '<div><strong>NIC ID:</strong> ' + esc(st.nicId) + '</div>' +
                         '<div><strong>पिता का नाम:</strong> ' + esc(st.father) + '</div>' +
                         '<div><strong>माता का नाम:</strong> ' + esc(st.mother) + '</div>' +
-                        '<div><strong>जन्म तिथि:</strong> ' + esc(st.dob) + '</div>' +
+                        dobHtml +
                     '</div>' +
                 '</div>' +
                 '<div class="table-wrap"><table><thead>' + saThead + '</thead><tbody>' + saRowsHtml + '</tbody></table></div>' +
@@ -2864,7 +2868,7 @@ body:not(.admin-logged-in) .admin-only { display: none !important; }
                     '<div><strong>NIC ID:</strong> ' + esc(st.nicId) + '</div>' +
                     '<div><strong>पिता का नाम:</strong> ' + esc(st.father) + '</div>' +
                     '<div><strong>माता का नाम:</strong> ' + esc(st.mother) + '</div>' +
-                    '<div><strong>जन्म तिथि:</strong> ' + esc(st.dob) + '</div>' +
+                    dobHtml +
                 '</div>' +
             '</div>' +
             '<div class="table-wrap"><table><thead>' + thead + '</thead><tbody>' + rowsHtml + '</tbody></table></div>' +
@@ -2901,7 +2905,7 @@ body:not(.admin-logged-in) .admin-only { display: none !important; }
             verifyStudentMobileThen(st, 'प्रिंट / PDF सेव', function () {
                 var prevTitle = document.title;
                 document.title = '\u00A0';
-                $('print-root').innerHTML = buildReportCardHTML(st, examKey);
+                $('print-root').innerHTML = buildReportCardHTML(st, examKey, true);
                 var restoreTitle = function () {
                     document.title = prevTitle;
                     window.removeEventListener('afterprint', restoreTitle);
@@ -2914,7 +2918,7 @@ body:not(.admin-logged-in) .admin-only { display: none !important; }
             verifyStudentMobileThen(st, 'डाउनलोड', function () {
                 var html = '<!DOCTYPE html><html lang="hi"><head><meta charset="UTF-8"><title>Report Card - ' + esc(st.name) + '</title>' +
                     '<style>body{font-family:sans-serif;padding:20px;color:#0f172a;}table{width:100%;border-collapse:collapse;margin-top:10px;}th,td{border:1px solid #334155;padding:7px;text-align:left;}th{background:#0f2b5b;color:#fff;}.report-card{border:2px solid #0f2b5b;padding:18px;border-radius:10px;}.rc-head{text-align:center;border-bottom:3px double #f97316;padding-bottom:10px;margin-bottom:12px;}.rc-stu-box{display:flex;gap:14px;background:#f1f5f9;padding:10px;border-radius:8px;margin:10px 0;}.rc-photo{width:70px;height:85px;object-fit:cover;border:1px solid #0f2b5b;}.rc-meta{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;flex:1;}.rc-summary{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;margin-top:12px;}.rc-sum-item{background:#f8fafc;border:1px solid #cbd5e1;padding:8px;text-align:center;}.rc-sign{display:flex;justify-content:space-between;margin-top:34px;font-weight:700;}</style></head><body>' +
-                    buildReportCardHTML(st, examKey) + '</body></html>';
+                    buildReportCardHTML(st, examKey, true) + '</body></html>';
                 var blob = new Blob([html], { type: 'text/html;charset=utf-8' });
                 var a = document.createElement('a');
                 a.href = URL.createObjectURL(blob);
@@ -3699,9 +3703,15 @@ body:not(.admin-logged-in) .admin-only { display: none !important; }
         };
         $('btn-print-staff').onclick = function () { printSection('स्वीकृत एवं कार्यरत कार्मिकों का विवरण', $('staff').querySelector('.table-wrap').innerHTML); };
         $('btn-dl-staff-csv').onclick = function () {
-            var csv = 'Sr.No.,Sanction Post,Sanction Subject,Employee Name,Employee ID,Staff/Profile ID,DOB,Original Post,Original Subject,Mobile No,Joining Date\n' +
+            var isAdm = document.body.classList.contains('admin-logged-in');
+            var csv = (isAdm
+                ? 'Sr.No.,Sanction Post,Sanction Subject,Employee Name,Employee ID,Staff/Profile ID,DOB,Original Post,Original Subject,Mobile No,Joining Date\n'
+                : 'Sr.No.,Sanction Post,Sanction Subject,Employee Name,Employee ID,Staff/Profile ID,DOB,Original Post,Original Subject,Joining Date\n') +
                 state.staff.map(function (s, i) {
-                    return [i + 1, '"' + s.sanctionPost + '"', '"' + s.sanctionSubject + '"', '"' + s.name + '"', s.empId, '"' + s.staffProfileId + '"', s.dob, '"' + s.origPost + '"', '"' + s.origSubject + '"', s.mobile, s.joiningDate].join(',');
+                    var row = [i + 1, '"' + s.sanctionPost + '"', '"' + s.sanctionSubject + '"', '"' + s.name + '"', s.empId, '"' + s.staffProfileId + '"', s.dob, '"' + s.origPost + '"', '"' + s.origSubject + '"'];
+                    if (isAdm) { row.push(s.mobile); }
+                    row.push(s.joiningDate);
+                    return row.join(',');
                 }).join('\n');
             var blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8' });
             var a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'staff_list.csv'; a.click();
