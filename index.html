@@ -743,22 +743,42 @@ footer {
 /* ===== एडमिन मोड सुरक्षा (बिना शिक्षक लॉगिन के एडिट/डिलीट छिपे रहेंगे) ===== */
 body:not(.admin-logged-in) .admin-only { display: none !important; }
 
-/* ===== गैलरी फ़ोटो व वीडियो डाउनलोड/सेव सुरक्षा ===== */
-#gallery img, #gallery video,
-#home-slideshow-panel img,
-#modal-photo-pv img,
-#modal-video-player video {
+/* ===== गैलरी फ़ोटो व वीडियो डाउनलोड/सेव सुरक्षा (केवल शिक्षक लॉगिन पर सेव/डाउनलोड) ===== */
+body:not(.admin-logged-in) #gallery img,
+body:not(.admin-logged-in) #gallery video,
+body:not(.admin-logged-in) #home-slideshow-panel img,
+body:not(.admin-logged-in) #modal-photo-pv img,
+body:not(.admin-logged-in) #modal-video-player video {
     -webkit-user-select: none;
     user-select: none;
     -webkit-touch-callout: none;
     -webkit-user-drag: none;
+}
+body:not(.admin-logged-in) #gallery img,
+body:not(.admin-logged-in) #home-slideshow-panel img,
+body:not(.admin-logged-in) #modal-photo-pv img {
+    pointer-events: none;
+}
+.gal-img-wrap {
+    position: relative;
+    width: 100%;
+    height: 175px;
+    cursor: pointer;
+    overflow: hidden;
+}
+body:not(.admin-logged-in) .gal-img-wrap::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    background: transparent;
 }
 .pv-img-shield {
     position: relative;
     display: inline-block;
     max-width: 100%;
 }
-.pv-img-shield::after {
+body:not(.admin-logged-in) .pv-img-shield::after {
     content: "";
     position: absolute;
     inset: 0;
@@ -3285,8 +3305,11 @@ body:not(.admin-logged-in) .admin-only { display: none !important; }
                 '</div>' +
             '</div>' + dotsHtml;
 
-        if ($('home-slide-img')) {
-            $('home-slide-img').onclick = function () {
+        var stageEl = root.querySelector('.home-slide-stage');
+        if (stageEl) {
+            stageEl.style.cursor = 'pointer';
+            stageEl.onclick = function (ev) {
+                if (ev.target.closest('.slide-nav-btn')) return;
                 openPhotoLightbox({ type: 'gallery', idx: homeSlideIdx }, cur.title, cur.cat + ' • ' + cur.date, cur.src);
             };
         }
@@ -3329,7 +3352,7 @@ body:not(.admin-logged-in) .admin-only { display: none !important; }
         }
         $('gallery-grid').innerHTML = list.map(function (g) {
             return '<div class="gallery-card">' +
-                '<img src="' + esc(g.src) + '" alt="' + esc(g.title) + '" draggable="false" data-pv-gal="' + g.id + '">' +
+                '<div class="gal-img-wrap" data-pv-gal="' + g.id + '"><img src="' + esc(g.src) + '" alt="' + esc(g.title) + '" draggable="false"></div>' +
                 '<div class="gallery-body">' +
                     '<div><strong style="font-size:14px;">' + esc(g.title) + '</strong><div style="font-size:12px;color:var(--text-muted);">' + esc(g.cat) + ' • ' + esc(g.date) + '</div></div>' +
                     '<button type="button" class="btn btn-sm btn-danger admin-only" data-del-gal="' + g.id + '">🗑️</button>' +
@@ -4596,7 +4619,9 @@ body:not(.admin-logged-in) .admin-only { display: none !important; }
             processNext(0);
         };
         $('gallery-grid').addEventListener('click', function (e) {
-            var pv = e.target.getAttribute('data-pv-gal'), dl = e.target.getAttribute('data-del-gal');
+            var pvEl = e.target.closest('[data-pv-gal]');
+            var pv = pvEl ? pvEl.getAttribute('data-pv-gal') : null;
+            var dl = e.target.getAttribute('data-del-gal');
             if (pv) {
                 var idx = state.gallery.findIndex(function (g) { return String(g.id) === pv; });
                 if (idx !== -1) openPhotoLightbox({ type: 'gallery', idx: idx }, state.gallery[idx].title, state.gallery[idx].cat + ' • ' + state.gallery[idx].date, state.gallery[idx].src);
@@ -4666,7 +4691,9 @@ body:not(.admin-logged-in) .admin-only { display: none !important; }
                     $('vp-download').style.display = 'none';
                 } else {
                     var isAdmVid = document.body.classList.contains('admin-logged-in');
-                    $('vp-stage').innerHTML = '<video src="' + esc(v.url) + '" controls controlsList="nodownload" disablePictureInPicture oncontextmenu="return false;" autoplay style="width:100%;max-height:65vh;"></video>';
+                    $('vp-stage').innerHTML = isAdmVid
+                        ? '<video src="' + esc(v.url) + '" controls autoplay style="width:100%;max-height:65vh;"></video>'
+                        : '<video src="' + esc(v.url) + '" controls controlsList="nodownload" disablePictureInPicture oncontextmenu="return false;" autoplay style="width:100%;max-height:65vh;"></video>';
                     if (isAdmVid) {
                         $('vp-download').href = v.url;
                         $('vp-download').style.display = 'inline-flex';
