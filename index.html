@@ -117,6 +117,7 @@ img { max-width: 100%; height: auto; }
 }
 .nav-links { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; width: 100%; }
 .nav-links a#nav-teacher-login { margin-left: auto; background: var(--saffron); color: #fff; font-weight: 700; }
+.nav-links a#nav-teacher-login.logged-in { background: var(--success); color: #fff; }
 .nav-links a {
     padding: 7px 10px; border-radius: 9px; font-size: 13px; font-weight: 600;
     color: #f1f5f9; transition: 0.2s; white-space: nowrap;
@@ -215,6 +216,112 @@ body.dark .notice-item-date {
     border: 1px solid var(--border-soft);
     border-left: 4px solid var(--saffron);
     border-radius: 10px;
+}
+
+/* ===== जन्मदिन शुभकामना बैनर (Student & Teacher) ===== */
+.bday-banner {
+    display: none;
+    background: linear-gradient(135deg, #fff7ed 0%, #fef3c7 52%, #ffedd5 100%);
+    border: 2px solid var(--saffron);
+    border-radius: 16px;
+    padding: 16px 18px;
+    margin-bottom: 18px;
+    box-shadow: 0 8px 24px rgba(249, 115, 22, 0.16);
+    position: relative;
+    overflow: hidden;
+}
+body.dark .bday-banner {
+    background: linear-gradient(135deg, #2b1a0a 0%, #1e293b 55%, #17233d 100%);
+    border-color: var(--saffron);
+}
+.bday-banner.show { display: block; animation: fadeInTab 0.3s ease; }
+.bday-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1.5px dashed rgba(249, 115, 22, 0.45);
+}
+.bday-title {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 800;
+    color: #9a3412;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+body.dark .bday-title { color: #fbbf24; }
+.bday-date-pill {
+    background: var(--saffron);
+    color: #fff;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+}
+.bday-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 12px;
+}
+.bday-card {
+    background: var(--card);
+    border: 1.5px solid rgba(249, 115, 22, 0.35);
+    border-left: 5px solid var(--saffron);
+    border-radius: 12px;
+    padding: 12px 14px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    box-shadow: 0 3px 12px rgba(15, 43, 91, 0.06);
+}
+.bday-card.bday-staff { border-left-color: var(--navy-mid); }
+.bday-avatar {
+    width: 54px;
+    height: 62px;
+    border-radius: 10px;
+    object-fit: cover;
+    border: 2px solid var(--saffron);
+    background: linear-gradient(135deg, #ffedd5, #fef08a);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 26px;
+    flex-shrink: 0;
+}
+.bday-body { flex: 1; min-width: 0; }
+.bday-role {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 800;
+    padding: 2px 8px;
+    border-radius: 999px;
+    margin-bottom: 4px;
+}
+.bday-role.staff { background: #dbeafe; color: #1e3a8a; }
+.bday-role.student { background: #ffedd5; color: #9a3412; }
+.bday-name {
+    font-size: 15.5px;
+    font-weight: 800;
+    color: var(--navy);
+    line-height: 1.25;
+}
+body.dark .bday-name { color: #fde68a; }
+.bday-msg {
+    font-size: 12.8px;
+    color: var(--text-muted);
+    margin: 5px 0 0;
+    line-height: 1.45;
+}
+.bday-actions {
+    margin-top: 8px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
 }
 
 /* ===== सिंगल-टैब सेक्शन सिस्टम (डिफ़ॉल्ट रूप से केवल #home सक्रिय) ===== */
@@ -687,7 +794,7 @@ body:not(.admin-logged-in) .admin-only { display: none !important; }
         </div>
         <div class="top-actions">
             <span id="cloud-sync-badge" class="sync-pill">☁️ लोकल / क्लाउड तैयार</span>
-            <button type="button" id="btn-admin-auth" class="btn btn-sm btn-saffron">🔐 शिक्षक लॉगिन</button>
+            <button type="button" id="btn-change-pass" class="btn btn-sm btn-ghost admin-only">🔑 पासवर्ड बदलें</button>
             <button type="button" id="btn-theme" class="btn btn-sm btn-ghost">🌙 डार्क मोड</button>
             <button type="button" id="btn-backup" class="btn btn-sm btn-ghost">💾 डेटा बैकअप</button>
             <div class="upload-btn-wrap btn btn-sm btn-ghost admin-only">
@@ -738,6 +845,9 @@ body:not(.admin-logged-in) .admin-only { display: none !important; }
 
 <!-- ===== 1. मुख्य पृष्ठ (डिफ़ॉल्ट रूप से सक्रिय) ===== -->
 <section id="home" class="tab-section active">
+    <!-- आज के जन्मदिन शुभकामना संदेश (स्वतः प्रदर्शित) -->
+    <div id="birthday-banner" class="bday-banner no-print"></div>
+
     <div class="hero">
         <div class="hero-badge">🇮🇳 राजस्थान सरकार • प्रारंभिक शिक्षा विभाग • UDISE+: 08151408901 • NIC-SD: 467416</div>
         <h2 id="hero-title">राजकीय उच्च प्राथमिक विद्यालय ठींगलों की ढाणी, रावनियाना</h2>
@@ -1647,6 +1757,26 @@ body:not(.admin-logged-in) .admin-only { display: none !important; }
     </div>
 </div>
 
+<!-- शिक्षक पासवर्ड बदलें मॉडल -->
+<div class="modal" id="modal-change-pass">
+    <div class="modal-box narrow">
+        <div class="modal-head"><h3>🔑 पासवर्ड बदलें</h3><button type="button" class="modal-close" data-close="modal-change-pass">×</button></div>
+        <p style="font-size:13px;color:var(--text-muted);margin:0 0 12px;">
+            सुरक्षा के लिए समय-समय पर अपना शिक्षक लॉगिन पासवर्ड बदलते रहें। नया पासवर्ड कम से कम 6 अक्षरों का होना चाहिए।
+        </p>
+        <div class="form-err" id="err-change-pass"></div>
+        <div class="form-grid">
+            <div class="field full"><label>वर्तमान पासवर्ड (Current Password) *</label><input type="password" id="cp-old" class="input" placeholder="अपना वर्तमान पासवर्ड दर्ज करें"></div>
+            <div class="field full"><label>नया पासवर्ड (New Password) *</label><input type="password" id="cp-new" class="input" placeholder="कम से कम 6 अक्षर / अंक"></div>
+            <div class="field full"><label>नया पासवर्ड पुनः दर्ज करें (Confirm Password) *</label><input type="password" id="cp-confirm" class="input" placeholder="नया पासवर्ड दोबारा लिखें"></div>
+        </div>
+        <div class="modal-foot">
+            <button type="button" class="btn btn-outline" data-close="modal-change-pass">रद्द करें</button>
+            <button type="button" id="btn-do-change-pass" class="btn btn-saffron">💾 पासवर्ड अपडेट करें</button>
+        </div>
+    </div>
+</div>
+
 <!-- सूचना पट्टी प्रबंधन मॉडल (केवल एडमिन के लिए) -->
 <div class="modal" id="modal-notices">
     <div class="modal-box">
@@ -2285,20 +2415,138 @@ body:not(.admin-logged-in) .admin-only { display: none !important; }
         $('st-schemes').textContent = state.schemes.length;
     }
 
+    function parseDobDayMonth(dobStr) {
+        var s = String(dobStr || '').trim();
+        if (!s || s === '-' || /^n\/?a$/i.test(s)) return null;
+        var monMap = {
+            jan: 1, january: 1, feb: 2, february: 2, mar: 3, march: 3,
+            apr: 4, april: 4, may: 5, jun: 6, june: 6, jul: 7, july: 7,
+            aug: 8, august: 8, sep: 9, sept: 9, september: 9,
+            oct: 10, october: 10, nov: 11, november: 11, dec: 12, december: 12
+        };
+        /* DD-Mon-YY / DD-Mon-YYYY / DD Mon YYYY */
+        var mText = s.match(/^(\d{1,2})[\-\/\.\s]+([A-Za-z]+)(?:[\-\/\.\s]+\d{2,4})?$/);
+        if (mText) {
+            var d1 = parseInt(mText[1], 10);
+            var mo1 = monMap[mText[2].toLowerCase()];
+            if (mo1 && d1 >= 1 && d1 <= 31) return { day: d1, month: mo1 };
+        }
+        /* YYYY-MM-DD */
+        var mIso = s.match(/^(\d{4})[\-\/\.](\d{1,2})[\-\/\.](\d{1,2})$/);
+        if (mIso) {
+            var mo2 = parseInt(mIso[2], 10), d2 = parseInt(mIso[3], 10);
+            if (mo2 >= 1 && mo2 <= 12 && d2 >= 1 && d2 <= 31) return { day: d2, month: mo2 };
+        }
+        /* DD-MM-YYYY / DD/MM/YYYY / DD.MM.YY */
+        var mNum = s.match(/^(\d{1,2})[\-\/\.](\d{1,2})(?:[\-\/\.]\d{2,4})?$/);
+        if (mNum) {
+            var d3 = parseInt(mNum[1], 10), mo3 = parseInt(mNum[2], 10);
+            if (mo3 >= 1 && mo3 <= 12 && d3 >= 1 && d3 <= 31) return { day: d3, month: mo3 };
+        }
+        return null;
+    }
+
+    function getTodaysBirthdays() {
+        var now = new Date();
+        var td = now.getDate(), tm = now.getMonth() + 1;
+        var list = [];
+        (state.staff || []).forEach(function (s) {
+            if (!s || /^(vacont|vacant|रिक्त)$/i.test(String(s.name || '').trim())) return;
+            var dm = parseDobDayMonth(s.dob);
+            if (dm && dm.day === td && dm.month === tm) {
+                list.push({
+                    kind: 'staff',
+                    name: s.name,
+                    sub: (s.sanctionPost || 'शिक्षक') + (s.sanctionSubject && s.sanctionSubject !== '---' ? ' (' + s.sanctionSubject + ')' : ''),
+                    mobile: s.mobile || '',
+                    photo: s.photo || ''
+                });
+            }
+        });
+        (state.students || []).forEach(function (st) {
+            if (!st) return;
+            var dm = parseDobDayMonth(st.dob);
+            if (dm && dm.day === td && dm.month === tm) {
+                list.push({
+                    kind: 'student',
+                    name: st.name,
+                    sub: 'कक्षा ' + st.cls + (st.father && st.father !== '-' ? ' • पिता: ' + st.father : ''),
+                    mobile: st.mobile || '',
+                    photo: st.photo || ''
+                });
+            }
+        });
+        return list;
+    }
+
+    function renderBirthdays() {
+        var box = $('birthday-banner');
+        if (!box) return;
+        var list = getTodaysBirthdays();
+        if (!list.length) {
+            box.classList.remove('show');
+            box.innerHTML = '';
+            return;
+        }
+        var isAdm = document.body.classList.contains('admin-logged-in');
+        var cardsHtml = list.map(function (item) {
+            var isStaff = item.kind === 'staff';
+            var avatarHtml = (isAdm && item.photo)
+                ? '<img src="' + esc(item.photo) + '" alt="' + esc(item.name) + '" class="bday-avatar">'
+                : '<div class="bday-avatar">' + (isStaff ? '💐' : '🎂') + '</div>';
+            var roleTag = isStaff
+                ? '<span class="bday-role staff">👩‍🏫 शिक्षक / कार्मिक</span>'
+                : '<span class="bday-role student">🎓 विद्यार्थी</span>';
+            var wishText = isStaff
+                ? 'आदरणीय ' + item.name + ' जी को जन्मदिन की हार्दिक शुभकामनाएँ! विद्यालय परिवार आपके उत्तम स्वास्थ्य, दीर्घायु एवं सुखमय जीवन की कामना करता है। 💐🎉'
+                : 'प्रिय विद्यार्थी ' + item.name + ' को जन्मदिन की ढेरों शुभकामनाएँ! विद्यालय परिवार आपके उज्ज्वल भविष्य, उत्तम स्वास्थ्य एवं सफलता की कामना करता है। 🎂🎈';
+            var waText = '🎂 *' + state.school.name + '*\n' + wishText;
+            var digits = String(item.mobile || '').replace(/\D/g, '').slice(-10);
+            var waUrl = (isAdm && digits.length === 10)
+                ? 'https://wa.me/91' + digits + '?text=' + encodeURIComponent(waText)
+                : 'https://wa.me/?text=' + encodeURIComponent(waText);
+            return '<div class="bday-card ' + (isStaff ? 'bday-staff' : '') + '">' +
+                avatarHtml +
+                '<div class="bday-body">' +
+                    roleTag +
+                    '<div class="bday-name">' + esc(item.name) + '</div>' +
+                    '<div style="font-size:12px;color:var(--text-muted);font-weight:600;">' + esc(item.sub) + '</div>' +
+                    '<p class="bday-msg">' + esc(wishText) + '</p>' +
+                    '<div class="bday-actions">' +
+                        '<a href="' + esc(waUrl) + '" target="_blank" rel="noopener" class="btn btn-sm btn-success">💬 WhatsApp शुभकामना भेजें</a>' +
+                    '</div>' +
+                '</div>' +
+            '</div>';
+        }).join('');
+
+        box.innerHTML =
+            '<div class="bday-head">' +
+                '<h3 class="bday-title">🎉 जन्मदिन की हार्दिक शुभकामनाएँ! 🎂</h3>' +
+                '<span class="bday-date-pill">📅 ' + esc(getFormattedDate()) + '</span>' +
+            '</div>' +
+            '<div class="bday-grid">' + cardsHtml + '</div>';
+        box.classList.add('show');
+    }
+
     function renderNotices() {
         var track = $('notice-marquee-track');
         if (!track) return;
         var list = Array.isArray(state.notices) ? state.notices : [];
-        if (!list.length) {
+        var bdays = getTodaysBirthdays();
+        var bdayParts = bdays.map(function (b) {
+            var label = b.kind === 'staff' ? 'आदरणीय ' + b.name + ' जी' : 'प्रिय विद्यार्थी ' + b.name + ' (' + b.sub.split(' • ')[0] + ')';
+            return '<span><span class="notice-item-date">🎂 जन्मदिन शुभकामना</span>' + esc(label) + ' को जन्मदिन की हार्दिक शुभकामनाएँ! 🎉</span>';
+        });
+        if (!list.length && !bdayParts.length) {
             track.innerHTML = '<span>राजकीय उच्च प्राथमिक विद्यालय ठींगलों की ढाणी, रावनियाना में आपका स्वागत है।</span>';
             track.style.animationDuration = '22s';
         } else {
-            var parts = list.map(function (n) {
+            var parts = bdayParts.concat(list.map(function (n) {
                 var dtTag = n.date ? '<span class="notice-item-date">' + esc(n.date) + '</span>' : '';
                 return '<span>' + dtTag + esc(n.text) + '</span>';
-            });
+            }));
             track.innerHTML = parts.join('<span class="notice-sep">★</span>');
-            var totalChars = list.reduce(function (acc, n) { return acc + String(n.text || '').length; }, 0);
+            var totalChars = list.reduce(function (acc, n) { return acc + String(n.text || '').length; }, 0) + bdays.length * 60;
             var dur = Math.max(18, Math.min(90, Math.round(totalChars * 0.22 + 12)));
             track.style.animation = 'none';
             track.offsetHeight;
@@ -2404,6 +2652,8 @@ body:not(.admin-logged-in) .admin-only { display: none !important; }
             '</tr>';
         }).join('');
         updateStats();
+        renderBirthdays();
+        renderNotices();
     }
 
     function renderStudents() {
@@ -2462,6 +2712,8 @@ body:not(.admin-logged-in) .admin-only { display: none !important; }
             '</tr>';
         }).join('');
         updateStats();
+        renderBirthdays();
+        renderNotices();
     }
 
     function matchesExamClassFilter(entryCls, filterCls) {
@@ -3435,6 +3687,7 @@ body:not(.admin-logged-in) .admin-only { display: none !important; }
     }
 
     function renderAll() {
+        renderBirthdays();
         renderNotices();
         renderSchool();
         renderStaff();
@@ -4677,26 +4930,103 @@ body:not(.admin-logged-in) .admin-only { display: none !important; }
             };
         }
 
-        /* शिक्षक लॉगिन टैब व बटन */
+        /* शिक्षक लॉगिन / लॉगआउट — एक ही टैब */
         if ($('nav-teacher-login')) {
             $('nav-teacher-login').onclick = function (e) {
                 e.preventDefault();
                 $('nav-links').classList.remove('open');
-                $('btn-admin-auth').click();
+                if (currentTeacher) {
+                    if (fbAuth) {
+                        fbAuth.signOut().then(function () {
+                            showToast('🔒 शिक्षक लॉगआउट हो गया (केवल व्यू मोड सक्रिय)।');
+                        });
+                    }
+                } else {
+                    setErr('err-admin-login', '');
+                    openModal('modal-admin-login');
+                }
             };
         }
-        $('btn-admin-auth').onclick = function () {
-            if (currentTeacher) {
-                if (fbAuth) {
-                    fbAuth.signOut().then(function () {
-                        showToast('🔒 शिक्षक लॉगआउट हो गया (केवल व्यू मोड सक्रिय)।');
-                    });
+        /* शिक्षक पासवर्ड बदलें */
+        if ($('btn-change-pass')) {
+            $('btn-change-pass').onclick = function () {
+                if (!currentTeacher) {
+                    showToast('⚠️ पासवर्ड बदलने के लिए पहले शिक्षक लॉगिन करें।');
+                    return;
                 }
-            } else {
-                setErr('err-admin-login', '');
-                openModal('modal-admin-login');
-            }
-        };
+                setErr('err-change-pass', '');
+                if ($('cp-old')) $('cp-old').value = '';
+                if ($('cp-new')) $('cp-new').value = '';
+                if ($('cp-confirm')) $('cp-confirm').value = '';
+                openModal('modal-change-pass');
+                setTimeout(function () { if ($('cp-old')) $('cp-old').focus(); }, 100);
+            };
+        }
+        if ($('btn-do-change-pass')) {
+            $('btn-do-change-pass').onclick = function () {
+                if (!currentTeacher || !fbAuth) {
+                    setErr('err-change-pass', '⚠️ कृपया पहले शिक्षक लॉगिन करें।');
+                    return;
+                }
+                var oldPass = $('cp-old').value || '';
+                var newPass = $('cp-new').value || '';
+                var confPass = $('cp-confirm').value || '';
+                if (!oldPass || !newPass || !confPass) {
+                    setErr('err-change-pass', 'कृपया सभी पासवर्ड फ़ील्ड भरें।');
+                    return;
+                }
+                if (newPass.length < 6) {
+                    setErr('err-change-pass', 'नया पासवर्ड कम से कम 6 अक्षरों का होना चाहिए।');
+                    $('cp-new').focus();
+                    return;
+                }
+                if (newPass !== confPass) {
+                    setErr('err-change-pass', 'नया पासवर्ड और पुष्टि पासवर्ड मेल नहीं खा रहे हैं।');
+                    $('cp-confirm').focus();
+                    return;
+                }
+                if (oldPass === newPass) {
+                    setErr('err-change-pass', 'नया पासवर्ड वर्तमान पासवर्ड से अलग होना चाहिए।');
+                    $('cp-new').focus();
+                    return;
+                }
+                setErr('err-change-pass', '');
+                var btn = $('btn-do-change-pass');
+                btn.disabled = true;
+                btn.textContent = '⏳ अपडेट हो रहा है...';
+                try {
+                    var cred = firebase.auth.EmailAuthProvider.credential(currentTeacher.email, oldPass);
+                    currentTeacher.reauthenticateWithCredential(cred).then(function () {
+                        return currentTeacher.updatePassword(newPass);
+                    }).then(function () {
+                        closeModal('modal-change-pass');
+                        $('cp-old').value = '';
+                        $('cp-new').value = '';
+                        $('cp-confirm').value = '';
+                        showToast('✅ पासवर्ड सफलतापूर्वक बदल दिया गया!');
+                    }).catch(function (err) {
+                        var code = (err && err.code) || '';
+                        if (code === 'auth/wrong-password' || code === 'auth/invalid-credential' || code === 'auth/invalid-login-credentials') {
+                            setErr('err-change-pass', '❌ वर्तमान पासवर्ड गलत है।');
+                            $('cp-old').focus();
+                        } else if (code === 'auth/weak-password') {
+                            setErr('err-change-pass', '❌ पासवर्ड बहुत कमजोर है। कृपया कम से कम 6 अक्षरों का मजबूत पासवर्ड चुनें।');
+                        } else if (code === 'auth/too-many-requests') {
+                            setErr('err-change-pass', '❌ बहुत अधिक प्रयास हुए हैं। कृपया कुछ देर बाद पुनः प्रयास करें।');
+                        } else {
+                            setErr('err-change-pass', '❌ पासवर्ड बदलने में त्रुटि हुई (' + (code || 'error') + ')।');
+                        }
+                    }).finally(function () {
+                        btn.disabled = false;
+                        btn.textContent = '💾 पासवर्ड अपडेट करें';
+                    });
+                } catch (e) {
+                    setErr('err-change-pass', '❌ पासवर्ड अपडेट करने में तकनीकी त्रुटि हुई।');
+                    btn.disabled = false;
+                    btn.textContent = '💾 पासवर्ड अपडेट करें';
+                }
+            };
+        }
         $('btn-do-admin-login').onclick = function () {
             var email = ($('adm-email').value || '').trim();
             var pass = $('adm-pass').value || '';
@@ -4801,12 +5131,15 @@ body:not(.admin-logged-in) .admin-only { display: none !important; }
             /* शिक्षक Auth स्टेट लिसनर */
             fbAuth.onAuthStateChanged(function (user) {
                 currentTeacher = user || null;
-                var authBtn = $('btn-admin-auth');
+                var navAuth = $('nav-teacher-login');
                 if (currentTeacher) {
                     document.body.classList.add('admin-logged-in');
-                    authBtn.textContent = '🔓 शिक्षक मोड (' + (currentTeacher.email ? currentTeacher.email.split('@')[0] : 'Admin') + ') • लॉगआउट';
-                    authBtn.classList.remove('btn-saffron');
-                    authBtn.classList.add('btn-success');
+                    if (navAuth) {
+                        var uname = currentTeacher.email ? currentTeacher.email.split('@')[0] : 'Admin';
+                        navAuth.textContent = '🔓 लॉगआउट';
+                        navAuth.title = 'शिक्षक मोड (' + uname + ') — लॉगआउट करने के लिए क्लिक करें';
+                        navAuth.classList.add('logged-in');
+                    }
                     /* यदि क्लाउड खाली है तो पहली बार सारा लोकल डेटा क्लाउड पर सेव करें और पुरानी गैलरी माइग्रेट करें */
                     fbDb.collection('school_portal').doc('main_data').get().then(function (snap) {
                         if (!snap.exists) saveState();
@@ -4814,12 +5147,15 @@ body:not(.admin-logged-in) .admin-only { display: none !important; }
                     migrateLegacyGalleryIfNeeded();
                 } else {
                     document.body.classList.remove('admin-logged-in');
-                    authBtn.textContent = '🔐 शिक्षक लॉगिन';
-                    authBtn.classList.remove('btn-success');
-                    authBtn.classList.add('btn-saffron');
+                    if (navAuth) {
+                        navAuth.textContent = '🔐 शिक्षक लॉगिन';
+                        navAuth.title = 'शिक्षक लॉगिन करें';
+                        navAuth.classList.remove('logged-in');
+                    }
                     var stuTab = document.querySelector('#res-mode-tabs [data-rmode="student"]');
                     if (stuTab) stuTab.click();
                 }
+                renderBirthdays();
             });
         } catch (err) {
             if ($('cloud-sync-badge')) $('cloud-sync-badge').textContent = '📴 लोकल मोड सक्रिय';
