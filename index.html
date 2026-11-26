@@ -871,14 +871,14 @@ body:not(.admin-logged-in) .admin-only { display: none !important; }
                     <th>Sanction Post</th>
                     <th>Sanction Subject</th>
                     <th>Employee Name</th>
-                    <th>Employee ID</th>
+                    <th class="admin-only">Employee ID</th>
                     <th>स्टाफ आई डी / प्रोफाइल आई डी</th>
-                    <th>DOB</th>
+                    <th class="admin-only">DOB</th>
                     <th>कार्मिक का मूल पद</th>
                     <th>कार्मिक का मूल विषय</th>
                     <th class="admin-only">Mobile No</th>
                     <th>Current School Joining Date</th>
-                    <th>Photograph</th>
+                    <th class="admin-only">Photograph</th>
                     <th class="no-print admin-only">Edit</th>
                     <th class="no-print admin-only">Delete</th>
                 </tr>
@@ -2369,7 +2369,7 @@ body:not(.admin-logged-in) .admin-only { display: none !important; }
         var list = state.staff.filter(function (s) {
             if (!q) return true;
             var isAdm = document.body.classList.contains('admin-logged-in');
-            var fields = isAdm ? [s.name, s.sanctionPost, s.sanctionSubject, s.empId, s.staffProfileId, s.mobile] : [s.name, s.sanctionPost, s.sanctionSubject, s.empId, s.staffProfileId];
+            var fields = isAdm ? [s.name, s.sanctionPost, s.sanctionSubject, s.empId, s.staffProfileId, s.mobile] : [s.name, s.sanctionPost, s.sanctionSubject, s.staffProfileId];
             return fields.join(' ').toLowerCase().indexOf(q) !== -1;
         });
         if (!list.length) {
@@ -2391,14 +2391,14 @@ body:not(.admin-logged-in) .admin-only { display: none !important; }
                 '<td>' + esc(s.sanctionPost) + '</td>' +
                 '<td>' + esc(s.sanctionSubject) + '</td>' +
                 '<td><strong style="' + (isVac ? 'color:#d97706;' : '') + '">' + esc(s.name) + '</strong></td>' +
-                '<td>' + esc(s.empId) + '</td>' +
+                '<td class="admin-only">' + esc(s.empId) + '</td>' +
                 '<td style="white-space:nowrap;">' + esc(s.staffProfileId) + '</td>' +
-                '<td style="white-space:nowrap;">' + esc(s.dob) + '</td>' +
+                '<td class="admin-only" style="white-space:nowrap;">' + esc(s.dob) + '</td>' +
                 '<td>' + esc(s.origPost) + '</td>' +
                 '<td>' + esc(s.origSubject) + '</td>' +
                 '<td class="admin-only" style="white-space:nowrap;">' + esc(s.mobile) + '</td>' +
                 '<td style="white-space:nowrap;">' + esc(s.joiningDate) + '</td>' +
-                '<td>' + photoHtml + '</td>' +
+                '<td class="admin-only">' + photoHtml + '</td>' +
                 '<td class="no-print admin-only"><button type="button" class="btn btn-sm btn-outline" data-edit-staff="' + s.id + '">✏️ Edit</button></td>' +
                 '<td class="no-print admin-only"><button type="button" class="btn btn-sm btn-danger" data-del-staff="' + s.id + '">🗑️</button></td>' +
             '</tr>';
@@ -3706,11 +3706,11 @@ body:not(.admin-logged-in) .admin-only { display: none !important; }
             var isAdm = document.body.classList.contains('admin-logged-in');
             var csv = (isAdm
                 ? 'Sr.No.,Sanction Post,Sanction Subject,Employee Name,Employee ID,Staff/Profile ID,DOB,Original Post,Original Subject,Mobile No,Joining Date\n'
-                : 'Sr.No.,Sanction Post,Sanction Subject,Employee Name,Employee ID,Staff/Profile ID,DOB,Original Post,Original Subject,Joining Date\n') +
+                : 'Sr.No.,Sanction Post,Sanction Subject,Employee Name,Staff/Profile ID,Original Post,Original Subject,Joining Date\n') +
                 state.staff.map(function (s, i) {
-                    var row = [i + 1, '"' + s.sanctionPost + '"', '"' + s.sanctionSubject + '"', '"' + s.name + '"', s.empId, '"' + s.staffProfileId + '"', s.dob, '"' + s.origPost + '"', '"' + s.origSubject + '"'];
-                    if (isAdm) { row.push(s.mobile); }
-                    row.push(s.joiningDate);
+                    var row = isAdm
+                        ? [i + 1, '"' + s.sanctionPost + '"', '"' + s.sanctionSubject + '"', '"' + s.name + '"', s.empId, '"' + s.staffProfileId + '"', s.dob, '"' + s.origPost + '"', '"' + s.origSubject + '"', s.mobile, s.joiningDate]
+                        : [i + 1, '"' + s.sanctionPost + '"', '"' + s.sanctionSubject + '"', '"' + s.name + '"', '"' + s.staffProfileId + '"', '"' + s.origPost + '"', '"' + s.origSubject + '"', s.joiningDate];
                     return row.join(',');
                 }).join('\n');
             var blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8' });
