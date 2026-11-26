@@ -743,6 +743,29 @@ footer {
 /* ===== एडमिन मोड सुरक्षा (बिना शिक्षक लॉगिन के एडिट/डिलीट छिपे रहेंगे) ===== */
 body:not(.admin-logged-in) .admin-only { display: none !important; }
 
+/* ===== गैलरी फ़ोटो व वीडियो डाउनलोड/सेव सुरक्षा ===== */
+#gallery img, #gallery video,
+#home-slideshow-panel img,
+#modal-photo-pv img,
+#modal-video-player video {
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
+    -webkit-user-drag: none;
+}
+.pv-img-shield {
+    position: relative;
+    display: inline-block;
+    max-width: 100%;
+}
+.pv-img-shield::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    background: transparent;
+}
+
 /* ===== PDF एवं Google Drive डाउनलोड सेक्शन ===== */
 .pdf-box {
     border: 1.5px solid var(--border);
@@ -796,7 +819,7 @@ body:not(.admin-logged-in) .admin-only { display: none !important; }
             <span id="cloud-sync-badge" class="sync-pill">☁️ लोकल / क्लाउड तैयार</span>
             <button type="button" id="btn-change-pass" class="btn btn-sm btn-ghost admin-only">🔑 पासवर्ड बदलें</button>
             <button type="button" id="btn-theme" class="btn btn-sm btn-ghost">🌙 डार्क मोड</button>
-            <button type="button" id="btn-backup" class="btn btn-sm btn-ghost">💾 डेटा बैकअप</button>
+            <button type="button" id="btn-backup" class="btn btn-sm btn-ghost admin-only">💾 डेटा बैकअप</button>
             <div class="upload-btn-wrap btn btn-sm btn-ghost admin-only">
                 <span>📂 रीस्टोर</span>
                 <input type="file" id="in-restore" accept="application/json">
@@ -1230,7 +1253,7 @@ body:not(.admin-logged-in) .admin-only { display: none !important; }
                 📁 Google Drive फ़ोटो फ़ोल्डर — सभी फ़ोटो सीधे यहाँ देखें या लिंक कॉपी करके गैलरी में जोड़ें
             </div>
             <div class="btn-group">
-                <a href="https://drive.google.com/drive/folders/1a8mHcSbzFBlRDOQFm6s9kh3rp99THTMI" target="_blank" rel="noopener" class="btn btn-sm btn-navy">📂 Google Drive फ़ोल्डर खोलें ↗</a>
+                <a href="https://drive.google.com/drive/folders/1a8mHcSbzFBlRDOQFm6s9kh3rp99THTMI" target="_blank" rel="noopener" class="btn btn-sm btn-navy admin-only">📂 Google Drive फ़ोल्डर खोलें ↗</a>
                 <button type="button" id="btn-pick-from-drive" class="btn btn-sm btn-saffron admin-only">➕ Drive लिंक से गैलरी में जोड़ें</button>
             </div>
         </div>
@@ -1354,7 +1377,7 @@ body:not(.admin-logged-in) .admin-only { display: none !important; }
                     <th>नाम</th>
                     <th>पद</th>
                     <th>पदस्थापन</th>
-                    <th>मोबाइल नं.</th>
+                    <th class="admin-only">मोबाइल नं.</th>
                     <th class="no-print admin-only">Edit</th>
                     <th class="no-print admin-only">Delete</th>
                 </tr>
@@ -1673,11 +1696,11 @@ body:not(.admin-logged-in) .admin-only { display: none !important; }
     <div class="modal-box narrow" style="text-align:center;">
         <div class="modal-head"><h3 id="pv-title">फ़ोटो प्रीव्यू</h3><button type="button" class="modal-close" data-close="modal-photo-pv">×</button></div>
         <div id="pv-meta" style="font-size:12.5px;color:var(--text-muted);margin-bottom:10px;"></div>
-        <img id="pv-img" src="" alt="" style="max-height:60vh;border-radius:12px;border:2px solid var(--border);margin:0 auto;">
+        <div class="pv-img-shield"><img id="pv-img" src="" alt="" draggable="false" style="max-height:60vh;border-radius:12px;border:2px solid var(--border);margin:0 auto;display:block;"></div>
         <div class="modal-foot" style="justify-content:center;">
             <button type="button" id="pv-prev-btn" class="btn btn-sm btn-outline">◀ पिछली</button>
             <button type="button" id="pv-next-btn" class="btn btn-sm btn-outline">अगली ▶</button>
-            <a id="pv-download" href="#" download="photo.jpg" class="btn btn-sm btn-navy">⬇️ डाउनलोड</a>
+            <a id="pv-download" href="#" download="photo.jpg" class="btn btn-sm btn-navy admin-only">⬇️ डाउनलोड</a>
             <div id="pv-change-wrap" class="upload-btn-wrap btn btn-sm btn-saffron"><span>📷 बदलें</span><input type="file" id="pv-change-file" accept="image/*"></div>
             <button type="button" id="pv-remove-btn" class="btn btn-sm btn-danger">🗑️ हटाएं</button>
         </div>
@@ -1691,7 +1714,7 @@ body:not(.admin-logged-in) .admin-only { display: none !important; }
         <div id="vp-stage" style="background:#000;border-radius:12px;overflow:hidden;min-height:280px;display:flex;align-items:center;justify-content:center;"></div>
         <div class="modal-foot" style="justify-content:space-between;">
             <div class="btn-group">
-                <a id="vp-download" href="#" download="school_video.mp4" class="btn btn-navy" style="display:none;">⬇️ डाउनलोड</a>
+                <a id="vp-download" href="#" download="school_video.mp4" class="btn btn-navy admin-only" style="display:none;">⬇️ डाउनलोड</a>
                 <button type="button" id="vp-del-btn" class="btn btn-danger admin-only">🗑️ हटाएं</button>
             </div>
             <button type="button" class="btn btn-saffron" data-close="modal-video-player">बंद करें</button>
@@ -3255,7 +3278,7 @@ body:not(.admin-logged-in) .admin-only { display: none !important; }
         root.innerHTML =
             '<div class="home-slide-stage">' +
                 navBtns +
-                '<img src="' + esc(cur.src) + '" alt="' + esc(cur.title) + '" id="home-slide-img" title="बड़ा देखने के लिए क्लिक करें">' +
+                '<img src="' + esc(cur.src) + '" alt="' + esc(cur.title) + '" id="home-slide-img" draggable="false" title="बड़ा देखने के लिए क्लिक करें">' +
                 '<div class="slide-caption">' +
                     '<div><strong style="font-size:15px;">' + esc(cur.title) + '</strong><div style="font-size:12px;color:#e2e8f0;">' + esc(cur.cat) + ' • ' + esc(cur.date) + '</div></div>' +
                     '<span class="badge badge-saffron">' + (homeSlideIdx + 1) + ' / ' + photos.length + '</span>' +
@@ -3306,7 +3329,7 @@ body:not(.admin-logged-in) .admin-only { display: none !important; }
         }
         $('gallery-grid').innerHTML = list.map(function (g) {
             return '<div class="gallery-card">' +
-                '<img src="' + esc(g.src) + '" alt="' + esc(g.title) + '" data-pv-gal="' + g.id + '">' +
+                '<img src="' + esc(g.src) + '" alt="' + esc(g.title) + '" draggable="false" data-pv-gal="' + g.id + '">' +
                 '<div class="gallery-body">' +
                     '<div><strong style="font-size:14px;">' + esc(g.title) + '</strong><div style="font-size:12px;color:var(--text-muted);">' + esc(g.cat) + ' • ' + esc(g.date) + '</div></div>' +
                     '<button type="button" class="btn btn-sm btn-danger admin-only" data-del-gal="' + g.id + '">🗑️</button>' +
@@ -3337,7 +3360,7 @@ body:not(.admin-logged-in) .admin-only { display: none !important; }
             var yid = v.source === 'link' ? getYTId(v.url) : null;
             var thumb = yid
                 ? '<img src="https://img.youtube.com/vi/' + yid + '/hqdefault.jpg" alt="' + esc(v.title) + '">'
-                : (v.url ? '<video src="' + esc(v.url) + '" muted playsinline preload="metadata"></video>' : '<div style="font-size:38px;">🎬</div>');
+                : (v.url ? '<video src="' + esc(v.url) + '" muted playsinline preload="metadata" controlsList="nodownload" disablePictureInPicture></video>' : '<div style="font-size:38px;">🎬</div>');
             return '<div class="video-card">' +
                 '<div class="video-thumb" data-play-vid="' + esc(v.id) + '">' + thumb + '<div class="video-play-overlay">▶</div></div>' +
                 '<div class="video-card-body">' +
@@ -3390,9 +3413,15 @@ body:not(.admin-logged-in) .admin-only { display: none !important; }
         $('pv-title').textContent = title;
         $('pv-meta').textContent = meta;
         $('pv-img').src = src;
-        $('pv-download').href = src;
-        $('pv-download').download = (title || 'photo') + '.jpg';
         var isAdmin = document.body.classList.contains('admin-logged-in');
+        if (isAdmin) {
+            $('pv-download').href = src;
+            $('pv-download').download = (title || 'photo') + '.jpg';
+            $('pv-download').style.display = 'inline-flex';
+        } else {
+            $('pv-download').removeAttribute('href');
+            $('pv-download').style.display = 'none';
+        }
         var editable = isAdmin && (ctx.type === 'student' || ctx.type === 'staff');
         var isGal = ctx.type === 'gallery' && state.gallery.length > 1;
         $('pv-change-wrap').style.display = editable ? 'inline-flex' : 'none';
@@ -3648,7 +3677,8 @@ body:not(.admin-logged-in) .admin-only { display: none !important; }
             if (curPost && String(item.post || '').trim() !== curPost) return false;
             if (curPosting && String(item.posting || '').trim() !== curPosting) return false;
             if (q) {
-                var hay = [item.gp, item.name, item.post, item.posting, item.mobile].join(' ').toLowerCase();
+                var isAdm = document.body.classList.contains('admin-logged-in');
+                var hay = (isAdm ? [item.gp, item.name, item.post, item.posting, item.mobile] : [item.gp, item.name, item.post, item.posting]).join(' ').toLowerCase();
                 if (hay.indexOf(q) === -1) return false;
             }
             return true;
@@ -3681,7 +3711,7 @@ body:not(.admin-logged-in) .admin-only { display: none !important; }
                 '<td><strong>' + esc(item.name || '-') + '</strong></td>' +
                 '<td><span class="badge badge-navy">' + esc(item.post || '-') + '</span></td>' +
                 '<td>' + esc(item.posting || '-') + '</td>' +
-                '<td>' + mobHtml + '</td>' +
+                '<td class="admin-only">' + mobHtml + '</td>' +
                 '<td class="no-print admin-only"><button type="button" class="btn btn-sm btn-outline" data-edit-blk="' + item.id + '">✏️ Edit</button></td>' +
                 '<td class="no-print admin-only"><button type="button" class="btn btn-sm btn-danger" data-del-blk="' + item.id + '">🗑️</button></td>' +
             '</tr>';
@@ -3793,6 +3823,10 @@ body:not(.admin-logged-in) .admin-only { display: none !important; }
 
         /* JSON बैकअप व रीस्टोर */
         $('btn-backup').onclick = function () {
+            if (!document.body.classList.contains('admin-logged-in')) {
+                showToast('⚠️ डेटा बैकअप केवल शिक्षक लॉगिन पर उपलब्ध है।');
+                return;
+            }
             var blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
             var a = document.createElement('a');
             a.href = URL.createObjectURL(blob);
@@ -4631,8 +4665,15 @@ body:not(.admin-logged-in) .admin-only { display: none !important; }
                     $('vp-stage').innerHTML = '<iframe width="100%" height="380" src="https://www.youtube.com/embed/' + yid + '?autoplay=1" frameborder="0" allowfullscreen></iframe>';
                     $('vp-download').style.display = 'none';
                 } else {
-                    $('vp-stage').innerHTML = '<video src="' + esc(v.url) + '" controls autoplay style="width:100%;max-height:65vh;"></video>';
-                    $('vp-download').href = v.url; $('vp-download').style.display = 'inline-flex';
+                    var isAdmVid = document.body.classList.contains('admin-logged-in');
+                    $('vp-stage').innerHTML = '<video src="' + esc(v.url) + '" controls controlsList="nodownload" disablePictureInPicture oncontextmenu="return false;" autoplay style="width:100%;max-height:65vh;"></video>';
+                    if (isAdmVid) {
+                        $('vp-download').href = v.url;
+                        $('vp-download').style.display = 'inline-flex';
+                    } else {
+                        $('vp-download').removeAttribute('href');
+                        $('vp-download').style.display = 'none';
+                    }
                 }
                 openModal('modal-video-player');
             }
@@ -4649,6 +4690,22 @@ body:not(.admin-logged-in) .admin-only { display: none !important; }
                 renderVideos();
             });
         };
+
+        /* गैलरी फ़ोटो व वीडियो पर राइट-क्लिक / ड्रैग-सेव रोकना */
+        ['gallery', 'home-slideshow-panel', 'modal-photo-pv', 'modal-video-player'].forEach(function (secId) {
+            var el = $(secId);
+            if (!el) return;
+            el.addEventListener('contextmenu', function (e) {
+                if (!document.body.classList.contains('admin-logged-in')) {
+                    e.preventDefault();
+                }
+            });
+            el.addEventListener('dragstart', function (e) {
+                if (!document.body.classList.contains('admin-logged-in')) {
+                    e.preventDefault();
+                }
+            });
+        });
 
         /* फ़ोटो लाइटबॉक्स */
         $('pv-prev-btn').onclick = function () {
@@ -4906,17 +4963,21 @@ body:not(.admin-logged-in) .admin-only { display: none !important; }
         }
         if ($('btn-export-block-csv')) {
             $('btn-export-block-csv').onclick = function () {
+                var isAdm = document.body.classList.contains('admin-logged-in');
                 var all = Array.isArray(state.blockStaff) ? state.blockStaff : [];
-                var csv = 'क्रम संख्या,ग्राम पंचायत/नगर पालिका,नाम,पद,पदस्थापन,मोबाइल नं.\n' +
+                var csv = (isAdm
+                    ? 'क्रम संख्या,ग्राम पंचायत/नगर पालिका,नाम,पद,पदस्थापन,मोबाइल नं.\n'
+                    : 'क्रम संख्या,ग्राम पंचायत/नगर पालिका,नाम,पद,पदस्थापन\n') +
                     all.map(function (x, i) {
-                        return [
+                        var row = [
                             i + 1,
                             '"' + String(x.gp || '').replace(/"/g, '""') + '"',
                             '"' + String(x.name || '').replace(/"/g, '""') + '"',
                             '"' + String(x.post || '').replace(/"/g, '""') + '"',
-                            '"' + String(x.posting || '').replace(/"/g, '""') + '"',
-                            '"' + String(x.mobile || '') + '"'
-                        ].join(',');
+                            '"' + String(x.posting || '').replace(/"/g, '""') + '"'
+                        ];
+                        if (isAdm) row.push('"' + String(x.mobile || '') + '"');
+                        return row.join(',');
                     }).join('\n');
                 var blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8' });
                 var a = document.createElement('a');
